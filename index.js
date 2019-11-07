@@ -11,7 +11,9 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Credentials", true);
     next();
 });
-app.use(cors());
+app.use(cors({
+    origin: 'localhost:3001'
+}));
 
 //serving static files from public folder
 app.use('/public', express.static(path.resolve(__dirname, './public')));
