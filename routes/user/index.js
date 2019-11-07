@@ -17,10 +17,12 @@ router.get('/:user_id', (req, res) => {
                 console.error("error: ", error);
                 json_response['success'] = false;
                 json_response['message'] = error;
+                json_response['data'] =[];
                 res.json(json_response);
             } else if(results.length===0){
                 json_response['success'] = false;
                 json_response['message'] = "No matching user id found";
+                json_response['data'] =[];
                 res.json(json_response);
             }
             else {
@@ -33,7 +35,10 @@ router.get('/:user_id', (req, res) => {
                 data['email'] = results['email'];
                 data['phone'] = results['phone'];
                 data['role'] = results['role'];
+                json_response['data'] =[];
                 json_response['data'].push(data);
+                json_response['success'] = true;
+                json_response['message'] = 'success';
                 res.json(json_response);
             }
         });
@@ -52,23 +57,26 @@ router.post('/', (req, res) => {
                 console.error("error: ", error);
                 json_response['success'] = false;
                 json_response['message'] = error;
+                json_response['data'] =[];
                 res.json(json_response);
             } else {
                 let affected_rows = results.affectedRows;
+                json_response['success'] = true;
                 json_response['message'] = 'Affected Rows: ' + affected_rows;
+                json_response['data'] =[];
                 res.json(json_response);
             }
         });
 
 });
-
+//update user
 router.put('/:id', (req, res) => {
     let request_body = req.body;
     let id = req.params['id'];
     console.log(request_body);
-    connection.query("update customer set first_name=?, last_name=?, email=?, contact_no=? ,password=? where id=?",
-        [request_body['first_name'], request_body['last_name'], request_body['email'],
-            request_body['contact_no'],
+    connection.query("update user set firstname=?, lastname=?, email=?, phone=? ,password=? where user_id=?",
+        [request_body['firstname'], request_body['lastname'], request_body['email'],
+            request_body['phone'],
             request_body['password'], id], (error, results, fields) => {
             if (error) {
                 console.error("error: ", error);
@@ -78,14 +86,16 @@ router.put('/:id', (req, res) => {
             } else {
                 let affected_rows = results.affectedRows;
                 json_response['message'] = 'Affected Rows: ' + affected_rows;
+                json_response['data'] =[];
                 res.json(json_response);
             }
         })
 });
 
-router.delete('/:id', (req, res) => {
-    let id = req.params['id'];
-    connection.query("delete from customer where id=?", [id], (error, results, fields) => {
+//delete user
+router.delete('/:user_id', (req, res) => {
+    let user_id = req.params['user_id'];
+    connection.query("delete from user where user_id=?", [user_id], (error, results, fields) => {
         if (error) {
             console.error("error: ", error);
             json_response['success'] = false;
@@ -93,7 +103,15 @@ router.delete('/:id', (req, res) => {
             res.json(json_response);
         } else {
             let affected_rows = results.affectedRows;
+            if (affected_rows === 0){
+                console.log("affected rows 0");
+                json_response['message'] = 'User deleted already';
+                json_response['data'] = [];
+                json_response['success'] = false;
+            }
             json_response['message'] = 'Affected Rows: ' + affected_rows;
+            json_response['data'] =[];
+            json_response['success'] = true;
             res.json(json_response);
         }
     })
