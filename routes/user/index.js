@@ -13,11 +13,17 @@ router.get('/:user_id', (req, res) => {
     connection.query("select user_id, username, firstname, lastname, phone, role, password, email from user where user_id = ?", id,
         (error, results, fields) => {
             if (error) {
+                console.log(results);
                 console.error("error: ", error);
                 json_response['success'] = false;
                 json_response['message'] = error;
                 res.json(json_response);
-            } else {
+            } else if(results.length===0){
+                json_response['success'] = false;
+                json_response['message'] = "No matching user id found";
+                res.json(json_response);
+            }
+            else {
 
                 results = results[0];
                 data['user_id'] = results['user_id'];
