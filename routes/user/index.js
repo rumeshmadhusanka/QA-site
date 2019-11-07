@@ -51,7 +51,7 @@ router.post('/login', (req, res) => {
     let request_body = req.body;
     let data = {};
 
-    connection.query("select  email,password from user where email = ? and password=?", [request_body['email'],request_body['password']],
+    connection.query("select  firstname,lastname,email,password,user_id from user where email = ? and password=?", [request_body['email'],request_body['password']],
         (error, results, fields) => {
             if (error) {
                 console.log(results);
@@ -67,6 +67,11 @@ router.post('/login', (req, res) => {
                 res.json(json_response);
             }
             else {
+                results = results[0];
+                data['user_id'] = results['user_id'];
+                data['firstname'] = results['firstname'];
+                data['lastname'] = results['lastname'];
+                data['email'] = results['email'];
                 json_response['data'] =[];
                 json_response['data'].push(data);
                 json_response['success'] = true;
