@@ -7,31 +7,38 @@ let json_response = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../re
 
 //get all questions
 router.get('/', (req, res) => {
-    connection.query("select user_id,username,firstname,lastname,email,role from item",
+    connection.query("select post_id, user_id, content, type from post where type='QUESTION' ",
         (error, results) => {
             if (error) {
                 console.error("error: ", error);
                 json_response['success'] = false;
                 json_response['message'] = error;
+                json_response['data'] = [];
                 res.json(json_response);
             } else {
                 json_response['data'] = results;
+                json_response['success'] = true;
+                json_response['message'] = 'All the posts';
                 res.json(json_response);
             }
         });
 });
 
-//get popular questions
-router.get('/popular', (req, res) => {
-    connection.query("select id, name,price,description,photo from item",
+//get answered questions
+router.get('/answered', (req, res) => {
+    connection.query(
+        "select post_id, user_id, content, type from post where type='QUESTION' and marked=1 order by date desc ",
         (error, results) => {
             if (error) {
                 console.error("error: ", error);
                 json_response['success'] = false;
                 json_response['message'] = error;
+                json_response['data'] = [];
                 res.json(json_response);
             } else {
                 json_response['data'] = results;
+                json_response['success'] = true;
+                json_response['message'] = 'All the posts';
                 res.json(json_response);
             }
         });
@@ -40,7 +47,7 @@ router.get('/popular', (req, res) => {
 
 router.post('/', (req, res) => {
     let req_body = req.body;
-    connection.query("insert into item(name, description, price) values (?,?,?)",
+    connection.query("insert into post(user_id, content, type, topic, date, marked) values (?,?,?)",
         [req_body['name'], req_body['description'], req_body['price']],
         (error, results) => {
             if (error) {
@@ -58,19 +65,19 @@ router.post('/', (req, res) => {
 
 
 //photo upload
-let filename = "";
-let Storage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        callback(null, path.resolve(__dirname, "../../public/images"));
-    },
-    filename: function (req, file, callback) {
-        filename = Date.now() + "_" + file.originalname;
-        callback(null, filename);
-    }
-});
-let upload = multer({
-    storage: Storage
-}).array("imgUploader", 3);
+// let filename = "";
+// let Storage = multer.diskStorage({
+//     destination: function (req, file, callback) {
+//         callback(null, path.resolve(__dirname, "../../public/images"));
+//     },
+//     filename: function (req, file, callback) {
+//         filename = Date.now() + "_" + file.originalname;
+//         callback(null, filename);
+//     }
+// });
+// let upload = multer({
+//     storage: Storage
+// }).array("imgUploader", 3);
 
 router.post('/:id/photo', (req, res) => {
     let id = req.params['id'];
