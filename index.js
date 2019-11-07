@@ -3,6 +3,7 @@ const app = express();
 const routes = require('./routes');
 const bodyParser = require('body-parser');
 const path = require('path');
+const cors = require('cors');
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,7 +11,7 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Credentials", true);
     next();
 });
-
+app.use(cors());
 
 //serving static files from public folder
 app.use('/public', express.static(path.resolve(__dirname, './public')));
