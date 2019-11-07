@@ -47,6 +47,36 @@ router.get('/:user_id', (req, res) => {
 
 });
 
+router.post('/login', (req, res) => {
+    let request_body = req.body;
+    let data = {};
+
+    connection.query("select  email,password from user where email = ? and password=?", [request_body['email'],request_body['password']],
+        (error, results, fields) => {
+            if (error) {
+                console.log(results);
+                console.error("error: ", error);
+                json_response['success'] = false;
+                json_response['message'] = error;
+                json_response['data'] =[];
+                res.json(json_response);
+            } else if(results.length===0){
+                json_response['success'] = false;
+                json_response['message'] = "Login Error";
+                json_response['data'] =[];
+                res.json(json_response);
+            }
+            else {
+                json_response['data'] =[];
+                json_response['data'].push(data);
+                json_response['success'] = true;
+                json_response['message'] = 'success';
+                res.json(json_response);
+            }
+        });
+
+
+});
 
 // photo upload
 let filename = "";
