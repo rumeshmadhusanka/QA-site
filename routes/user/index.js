@@ -147,9 +147,18 @@ router.put('/:id', (req, res) => {
                 res.json(json_response);
             } else {
                 let affected_rows = results.affectedRows;
-                json_response['message'] = 'Affected Rows: ' + affected_rows;
-                json_response['data'] =[];
-                res.json(json_response);
+                if (affected_rows === 0){
+                    console.log("affected rows 0");
+                    json_response['message'] = 'User deleted already';
+                    json_response['data'] = [];
+                    json_response['success'] = false;
+                    res.json(json_response);
+                }else {
+                    json_response['success'] = true;
+                    json_response['message'] = 'Affected Rows: ' + affected_rows;
+                    json_response['data'] = [];
+                    res.json(json_response);
+                }
             }
         })
 });
@@ -170,11 +179,13 @@ router.delete('/:user_id', (req, res) => {
                 json_response['message'] = 'User deleted already';
                 json_response['data'] = [];
                 json_response['success'] = false;
+                res.json(json_response);
+            }else {
+                json_response['message'] = 'Affected Rows: ' + affected_rows;
+                json_response['data'] = [];
+                json_response['success'] = true;
+                res.json(json_response);
             }
-            json_response['message'] = 'Affected Rows: ' + affected_rows;
-            json_response['data'] =[];
-            json_response['success'] = true;
-            res.json(json_response);
         }
     })
 });
