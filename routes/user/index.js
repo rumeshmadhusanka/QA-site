@@ -3,14 +3,14 @@ const router = require("express").Router();
 const connection = require("../../db");
 const path = require('path');
 let json_response = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../response_format.json"), 'utf8'));
-
+const multer = require('multer');
 
 //get user profile
 router.get('/:user_id', (req, res) => {
     let id = req.params['user_id'];
     let data = {};
 
-    connection.query("select user_id, username, firstname, lastname, phone, role, password, email from user where user_id = ?", id,
+    connection.query("select user_id, username, firstname, lastname, phone, role, password, email,photo from user where user_id = ?", id,
         (error, results, fields) => {
             if (error) {
                 console.log(results);
@@ -35,6 +35,7 @@ router.get('/:user_id', (req, res) => {
                 data['email'] = results['email'];
                 data['phone'] = results['phone'];
                 data['role'] = results['role'];
+                data['photo'] = results['photo'];
                 json_response['data'] =[];
                 json_response['data'].push(data);
                 json_response['success'] = true;
@@ -44,6 +45,37 @@ router.get('/:user_id', (req, res) => {
         });
 
 
+});
+
+
+// photo upload
+let filename = "";
+let Storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, path.resolve(__dirname, "../../public/images"));
+    },
+    filename: function (req, file, callback) {
+        filename = Date.now() + "_" + file.originalname;
+        callback(null, filename);
+    }
+});
+let upload = multer({
+    storage: Storage
+}).array("imgUploader", 3);
+router.post('/:id/photo', (req, res) => {
+    let id = req.params['id'];
+    upload(req, res, function (error) {
+        connection.query("update user set photo=? where user_id=?", [filename, id]);
+        if (error) {
+            console.error("error: ", error);
+            json_response['success'] = false;
+            json_response['message'] = error;
+            res.json(json_response);
+        } else {
+            json_response['message'] = 'image uploaded successfully';
+            res.json(json_response);
+        }
+    });
 });
 
 //create user
