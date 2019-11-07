@@ -23,11 +23,34 @@ router.get('/', (req, res) => {
             }
         });
 });
-
+//get by id
+router.get('/:id', (req, res) => {
+    let id = req.params['id'];
+    connection.query("select post_id, user_id, topic, content ,date from post where post_id=?", [id],
+        (error, results) => {
+            if (error) {
+                console.error("error: ", error);
+                json_response['success'] = false;
+                json_response['message'] = error;
+                json_response['data'] = [];
+                res.json(json_response);
+            } else if (results.length === 0) {
+                json_response['success'] = false;
+                json_response['message'] = "No matching post found";
+                json_response['data'] = [];
+                res.json(json_response);
+            } else {
+                json_response['data'] = results;
+                json_response['success'] = true;
+                json_response['message'] = 'post by id';
+                res.json(json_response);
+            }
+        });
+});
 //get answered questions
 router.get('/answered', (req, res) => {
     connection.query(
-        "select post_id, user_id, content, type from post where type='QUESTION' and marked=1 order by date desc ",
+        "select post_id, user_id, topic, content, date from post where post_id in (select post_id from answer) ",
         (error, results) => {
             if (error) {
                 console.error("error: ", error);
@@ -48,7 +71,7 @@ router.get('/answered', (req, res) => {
 //unanswered
 router.get('/unanswered', (req, res) => {
     connection.query(
-        "select post_id, user_id, content, type from post where type='QUESTION' and marked=1 order by date desc ",
+        "select post_id, user_id, topic, content, date from post where post_id not in (select post_id from answer) ",
         (error, results) => {
             if (error) {
                 console.error("error: ", error);
@@ -82,10 +105,6 @@ router.post('/', (req, res) => {
             }
         })
 });
-
-
-
-
 
 
 router.put('/:id', (req, res) => {
