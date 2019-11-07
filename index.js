@@ -5,16 +5,16 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', '*');
-    res.setHeader("Access-Control-Allow-Credentials", true);
-    next();
-});
-// app.use(cors());
+// app.use((req, res, next) => {
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.setHeader('Access-Control-Allow-Methods', '*');
+//     res.setHeader("Access-Control-Allow-Credentials", true);
+//     next();
+// });
+app.use(cors());
 
 //serving static files from public folder
-app.use('/public', express.static(path.resolve(__dirname, './public')));
+//app.use('/public', express.static(path.resolve(__dirname, './public')));
 
 
 // support parsing of application/json type post data
