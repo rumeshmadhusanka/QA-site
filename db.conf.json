@@ -1,6 +1,6 @@
 {
-  "host": "sql7.freemysqlhosting.net",
-  "user": "sql7311147",
-  "password": "tuMWQUCs7L",
-  "database": "sql7311147"
+  "host": "localhost",
+  "user": "root",
+  "password": "",
+  "database": "qa"
 }
