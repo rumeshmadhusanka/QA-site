@@ -43,7 +43,7 @@ router.get('/:post_id', (req, res) => {
 router.post('/vote', (req, res) => {
     let request_body = req.body;
     console.log(request_body);
-    connection.query("insert into question_votes( post_id,user_id, vote) values (?,?,?)",
+    connection.query("replace into question_votes( post_id,user_id, vote) values (?,?,?)",
         [request_body['post_id'],request_body['user_id'],request_body['vote']], (error, results, fields) => {
             if (error) {
                 console.error("error: ", error);
