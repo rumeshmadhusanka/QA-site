@@ -5,12 +5,12 @@ const path = require('path');
 const Filter = require('bad-words');
 
 let json_response = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../response_format.json"), 'utf8'));
-router.get('/',()=>{});
+
 
 router.get('/:post_id', (req, res) => {
     let id = req.params['post_id'];
     let data = {};
-    connection.query("select answer_id, post_id, description from answer where post_id = ?", id,
+    connection.query("select answer_id, post_id, description, user_id,email from qa.answer natural join qa.user where post_id = ?", id,
         (error, results, fields) => {
             if (error) {
                 console.error("error: ", error);
@@ -35,11 +35,11 @@ router.get('/:post_id', (req, res) => {
 let filter = new Filter();
 router.post('/', (req, res) => {
     let req_body = req.body;
-    let cleaned = filter.clean(req_body['content']);
-    if (cleaned === req_body['content']) {
+    let cleaned = filter.clean(req_body['description']);
+    if (cleaned === req_body['description']) {
 
-        connection.query("insert into post( user_id, topic, content, date) values (?,?,?,?);insert into answer(post_id, description) values (?,?)",
-            [req_body['user_id'], req_body['topic'], req_body['content'], req_body['date'], req_body['post_id'], req_body['description']],
+        connection.query("insert into answer(post_id, description,user_id) values (?,?,?)",
+            [ req_body['post_id'], req_body['description'],req_body['user_id']],
             (error, results) => {
                 if (error) {
                     console.error("error: ", error);
